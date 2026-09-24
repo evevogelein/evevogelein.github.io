@@ -1238,7 +1238,7 @@ spaces where people can connect, reflect and grow together.
       <!-- Chat Container -->
       <div class="rounded-xl bg-gray-50 ring-1 ring-black/5 overflow-hidden relative">
         <div class="h-[450px] w-full">
-          <iframe title="Alphabees KI Tutor" class="w-full h-full border-0" src="https://chat.alphabees.de/production/index.html?botId=ab09ec57-b7c3-432d-a4fa-6196ba109cea&amp;apiKey=f6c9f53e-d4b7-4f36-b579-f2295a8649e2&amp;isFullscreen=true" allow="clipboard-read; clipboard-write; microphone; camera"></iframe>
+          <iframe title="Eve Vogelein AI Twin" class="w-full h-full border-0" src="alphabees-chat.html" loading="lazy" tabindex="-1" allow="clipboard-read; clipboard-write; microphone; camera"></iframe>
         </div>
       </div>
     </div>
@@ -1286,4 +1286,25 @@ spaces where people can connect, reflect and grow together.
       <section id="contact" class="max-w-7xl mx-auto px-6 sm:px-8">
         </section></div>
 
+<script>
+  (() => {
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+
+    const keepInitialViewAtTop = () => {
+      if (!window.location.hash) {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      }
+    };
+
+    keepInitialViewAtTop();
+    window.addEventListener('DOMContentLoaded', keepInitialViewAtTop);
+    window.addEventListener('load', () => {
+      keepInitialViewAtTop();
+      window.setTimeout(keepInitialViewAtTop, 250);
+      window.setTimeout(keepInitialViewAtTop, 1000);
+    });
+  })();
+</script>
 </body></html>

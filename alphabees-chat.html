@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="color-scheme" content="light">
+    <title>Eve Vogelein AI Twin</title>
+    <style>
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        background: #f9fafb;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      try {
+        localStorage.setItem("al-onboardingTour-v1", "declined");
+      } catch (error) {
+        console.warn("Could not persist Alphabees onboarding state.", error);
+      }
+
+      window.addEventListener("load", () => {
+        const script = document.createElement("script");
+        script.src = "https://dn1t41q06556o.cloudfront.net/production/chat-widget.js";
+        script.onload = () => {
+          window._loadAlChat({
+            apiKey: "f6c9f53e-d4b7-4f36-b579-f2295a8649e2",
+            botId: "ab09ec57-b7c3-432d-a4fa-6196ba109cea",
+            isChatOpen: true,
+            isFullscreen: true,
+          });
+        };
+        document.body.appendChild(script);
+      });
+    </script>
+  </body>
+</html>
