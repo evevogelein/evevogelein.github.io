@@ -14,26 +14,102 @@
         overflow: hidden;
         background: #f9fafb;
       }
+
+      app-tour-overlay,
+      .tour-overlay,
+      .tour-tooltip {
+        display: none !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+      }
     </style>
   </head>
   <body>
     <script>
+      const ONBOARDING_TOUR_KEY = "al-onboardingTour-v1";
+
+      const markOnboardingTourCompleted = () => {
+        try {
+          localStorage.setItem(ONBOARDING_TOUR_KEY, "completed");
+        } catch (error) {
+          console.warn("Could not persist Alphabees onboarding state.", error);
+        }
+      };
+
+      const suppressOnboardingTour = () => {
+        markOnboardingTourCompleted();
+
+        document
+          .querySelectorAll("app-tour-overlay, .tour-overlay, .tour-tooltip")
+          .forEach((node) => node.remove());
+
+        document.querySelectorAll("[role='dialog']").forEach((node) => {
+          const text = node.textContent || "";
+          if (
+            text.includes("Schön, dass du da bist") ||
+            text.includes("KI-Lernbegleiter")
+          ) {
+            node.remove();
+          }
+        });
+      };
+
       try {
-        localStorage.setItem("al-onboardingTour-v1", "declined");
+        const originalGetItem = Storage.prototype.getItem;
+        const originalSetItem = Storage.prototype.setItem;
+
+        Storage.prototype.getItem = function (key) {
+          if (key === ONBOARDING_TOUR_KEY) {
+            return "completed";
+          }
+
+          return originalGetItem.call(this, key);
+        };
+
+        Storage.prototype.setItem = function (key, value) {
+          if (key === ONBOARDING_TOUR_KEY) {
+            return originalSetItem.call(this, key, "completed");
+          }
+
+          return originalSetItem.call(this, key, value);
+        };
       } catch (error) {
-        console.warn("Could not persist Alphabees onboarding state.", error);
+        console.warn("Could not lock Alphabees onboarding state.", error);
       }
 
+      markOnboardingTourCompleted();
+
+      const tourObserver = new MutationObserver(suppressOnboardingTour);
+      tourObserver.observe(document.documentElement, {
+        childList: true,
+        subtree: true,
+      });
+
+      [250, 800, 1500, 3000, 6000].forEach((delay) => {
+        window.setTimeout(suppressOnboardingTour, delay);
+      });
+
+      window.setTimeout(() => tourObserver.disconnect(), 10000);
+
       window.addEventListener("load", () => {
+        suppressOnboardingTour();
+
         const script = document.createElement("script");
         script.src = "https://dn1t41q06556o.cloudfront.net/production/chat-widget.js";
         script.onload = () => {
+          suppressOnboardingTour();
           window._loadAlChat({
             apiKey: "f6c9f53e-d4b7-4f36-b579-f2295a8649e2",
             botId: "ab09ec57-b7c3-432d-a4fa-6196ba109cea",
             isChatOpen: true,
             isFullscreen: true,
+            disableOnboardingTour: true,
+            onboardingTourEnabled: false,
+            showOnboardingTour: false,
           });
+
+          window.setTimeout(suppressOnboardingTour, 250);
+          window.setTimeout(suppressOnboardingTour, 1000);
         };
         document.body.appendChild(script);
       });
